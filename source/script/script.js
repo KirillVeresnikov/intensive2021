@@ -57,7 +57,7 @@ class Game {
         this.player2.Direction = true;
         this.player2.X = 550;
         this.player2.Y = 350;
-        this.player2.Control = ['Numpad8', 'Numpad4', 'Numpad5', 'Numpad6', 'Numpad9', 'Numpad7'];
+        this.player2.Control = ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight', 'Numpad9', 'Numpad7'];
 
         setInterval(this.update, 1000 / 60, this);
         this.playerCtrl[0] = setInterval(this.playerAction, 1000 / 60, this.player1);
@@ -67,7 +67,7 @@ class Game {
     drawPlayer(player) {
         var dX = player.X;
         var dY = player.Y;
-        if (player.Direction) {
+        if (!player.Direction) {
             this.ctx.setTransform(-1, 0, 0, 1, 0, 0);
             this.ctx.rotate(0);
             dX = -dX - 60;
