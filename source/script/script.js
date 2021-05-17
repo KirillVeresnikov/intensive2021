@@ -73,9 +73,9 @@ class Game {
             dX = -dX - 60;
         }
 
-        this.ctx.drawImage(player.getLegs(), dX + 10, dY + 70, 50, 20);
-        this.ctx.drawImage(player.model('body'), dX, dY, 60, 80);
         if (!player.Waiting) {
+            this.ctx.drawImage(player.getLegs(), dX + 10, dY + 70, 50, 20);
+            this.ctx.drawImage(player.model('body'), dX, dY, 60, 80);    
             if (player.Motions) {
                 this.ctx.drawImage(player.getHands(), dX + 14, dY + 10, 20, 60);
                 this.ctx.drawImage(player.getHead(), dX + 2, dY - 33, 65, 95);
@@ -84,6 +84,8 @@ class Game {
                 this.ctx.drawImage(player.getHead(), dX, dY - 35, 65, 95);
             }
         } else {
+            this.ctx.drawImage(player.getLegs(), dX + 10, dY + 70, 50, 20);
+            this.ctx.drawImage(player.model('body'), dX, dY, 60, 80);    
             this.ctx.drawImage(player.getHands(), dX + 17, dY + 10, 50, 60);
             this.ctx.drawImage(player.getHead(), dX, dY - 35, 65, 95);
         }
