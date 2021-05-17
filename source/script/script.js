@@ -54,14 +54,14 @@ class Game {
         this.player1.Y = 350;
         this.player1.Control = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyE', 'KeyQ'];
 
-        this.player2.Direction = true;
+        this.player2.Direction = false;
         this.player2.X = 550;
         this.player2.Y = 350;
         this.player2.Control = ['KeyI', 'KeyJ', 'KeyK', 'KeyL', 'KeyO', 'KeyU'];
 
         setInterval(this.update, 1000 / 60, this);
-        this.playerCtrl[0] = setInterval(this.playerAction, 1000 / 60, this.player1);
-        this.playerCtrl[1] = setInterval(this.playerAction, 1000 / 60, this.player2);
+        this.playerCtrl[0] = setInterval(this.playerAction, 1000 / 60, this.player1, this);
+        this.playerCtrl[1] = setInterval(this.playerAction, 1000 / 60, this.player2, this);
     }
 
     drawPlayer(player) {
@@ -109,63 +109,41 @@ class Game {
             }
             context.CounterFPS = 0;
         }
-        context.drawPlayer(context.player1);
-        context.drawPlayer(context.player2);
     }
 
-    playerAction(player) {
+    playerAction(player, context) {
+        context.drawPlayer(player);
         switch (player.key) {
             case player.Control[0]:
                 //w
                 if (player.Motions) {
-                    player.Motions = true;
+                    player.up();
                 }
                 break;
 
             case player.Control[1]:
                 //a
                 if (player.Motions) {
-                    player.Motions = true;
                     player.Direction = false;
+                    player.moveL();
                 }
                 break;
 
             case player.Control[2]:
                 //s
                 if (player.Motions) {
-                    player.Motions = true;
+                    player.down();
                 }
                 break;
 
             case player.Control[3]:
                 //d
                 if (player.Motions) {
-                    player.Motions = true;
                     player.Direction = true;
+                    player.moveR();
                 }
                 break;
         }
-    }
-
-    moveR(player) {
-        player.Direction = true;
-        player.X += this.speed;
-    }
-
-    moveL(player) {
-        player.Direction = false;
-        player.X -= this.speed;
-    }
-
-    up(player) {
-        player.Y += this.speed;
-    }
-
-    down(player) {
-        player.Y -= this.speed;
-    }
-
-    attack(player) {
     }
 }
 
@@ -184,10 +162,11 @@ class Player {
         this.key = null;
         this.life = 100;
         this.damage = 20;
+        this.speed = 3;
         this.Waiting = true;
         this.Motions = false;
         this.Attack = false;
-        this.Direction = false; //true - право, false - лево
+        this.Direction = true; //true - право, false - лево
         this.Ready = true;
     }
 
@@ -289,5 +268,26 @@ class Player {
 
     getDamage() {
         return this.damage;
+    }
+
+    moveR() {
+        this.Direction = true;
+        this.X += this.speed;
+    }
+
+    moveL() {
+        this.Direction = false;
+        this.X -= this.speed;
+    }
+
+    up() {
+        this.Y -= this.speed;
+    }
+
+    down() {
+        this.Y += this.speed;
+    }
+
+    attack() {
     }
 }
