@@ -126,7 +126,7 @@ class Game {
                 //a
                 if (player.Motions) {
                     player.Motions = true;
-                    player.Direction = true;
+                    player.Direction = false;
                 }
                 break;
 
@@ -141,7 +141,7 @@ class Game {
                 //d
                 if (player.Motions) {
                     player.Motions = true;
-                    player.Direction = false;
+                    player.Direction = true;
                 }
                 break;
         }
