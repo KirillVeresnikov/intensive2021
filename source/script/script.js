@@ -60,8 +60,8 @@ class Game {
         this.player2.Control = ['KeyI', 'KeyJ', 'KeyK', 'KeyL', 'KeyO', 'KeyU'];
 
         setInterval(this.update, 1000 / 60, this);
-        this.playerCtrl[0] = setInterval(this.playerAction, 1000 / 60, this.player1, this);
-        this.playerCtrl[1] = setInterval(this.playerAction, 1000 / 60, this.player2, this);
+        this.playerCtrl[0] = setInterval(this.playerAction, 1000 / 60, this.player1);
+        this.playerCtrl[1] = setInterval(this.playerAction, 1000 / 60, this.player2);
     }
 
     drawPlayer(player) {
@@ -109,10 +109,11 @@ class Game {
             }
             context.CounterFPS = 0;
         }
+        context.drawPlayer(context.player1);
+        context.drawPlayer(context.player2);
     }
 
     playerAction(player, context) {
-        context.drawPlayer(player);
         switch (player.key) {
             case player.Control[0]:
                 //w
