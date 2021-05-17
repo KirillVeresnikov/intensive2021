@@ -57,7 +57,7 @@ class Game {
         this.player2.Direction = true;
         this.player2.X = 550;
         this.player2.Y = 350;
-        this.player2.Control = ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight', 'Numpad9', 'Numpad7'];
+        this.player2.Control = ['KeyI', 'KeyJ', 'KeyK', 'KeyL', 'KeyO', 'KeyU'];
 
         setInterval(this.update, 1000 / 60, this);
         this.playerCtrl[0] = setInterval(this.playerAction, 1000 / 60, this.player1);
