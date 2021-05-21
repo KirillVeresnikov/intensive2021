@@ -84,7 +84,6 @@ class Game {
         this.player1 = new Player("player1");
         this.player2 = new Player("player2");
         this.playerCtrl = [null, null];
-        this.speed = 10;
         this.CounterFPS = 0;
     }
 
@@ -103,43 +102,67 @@ class Game {
         this.playerCtrl[0] = setInterval(
             this.playerAction,
             1000 / 60,
-            this.player1
+            this.player1,
+            this.player2
         );
 
         this.playerCtrl[1] = setInterval(
             this.playerAction,
             1000 / 60,
-            this.player2
+            this.player2,
+            this.player1
         );
     }
 
     drawPlayer(player) {
         var dX = player.X;
         var dY = player.Y;
-        if (!player.Direction) {
-            this.ctx.setTransform(-1, 0, 0, 1, 0, 0);
-            this.ctx.rotate(0);
-            dX = -dX - 60;
-        }
-
-        if (!player.Waiting) {
-            this.ctx.drawImage(player.getLegs(), dX + 10, dY + 70, 50, 20);
-            this.ctx.drawImage(player.model("body"), dX, dY, 60, 80);
-            if (player.Motions) {
-                this.ctx.drawImage(player.getHands(), dX + 14, dY + 10, 20, 60);
-                this.ctx.drawImage(player.getHead(), dX + 2, dY - 33, 65, 95);
+        if (player.life > 0) {
+            if (!player.Waiting) {
+                if (player.Direction) {
+                    this.ctx.drawImage(player.getLegs(), dX + 10, dY + 70, 50, 20);
+                    this.ctx.drawImage(player.model("body"), dX, dY, 60, 80);
+                    if (player.Motions) {
+                        this.ctx.drawImage(player.getHands(), dX + 14, dY + 10, 20, 60);
+                        this.ctx.drawImage(player.getHead(), dX + 2, dY - 33, 65, 95);
+                    } else {
+                        this.ctx.drawImage(player.getHands(), dX - 4, dY + 10, 80, 60);
+                        this.ctx.drawImage(player.getHead(), dX, dY - 35, 65, 95);
+                    }
+                } else {
+                    this.ctx.drawImage(player.getLegs(), dX, dY + 70, 50, 20);
+                    this.ctx.drawImage(player.model("body"), dX, dY, 60, 80);
+                    if (player.Motions) {
+                        this.ctx.drawImage(player.getHands(), dX, dY + 10, 20, 60);
+                        this.ctx.drawImage(player.getHead(), dX + 2, dY - 33, 65, 95);
+                    } else {
+                        this.ctx.drawImage(player.getHands(), dX - 18, dY + 10, 80, 60);
+                        this.ctx.drawImage(player.getHead(), dX, dY - 35, 65, 95);
+                    }
+                }
             } else {
-                this.ctx.drawImage(player.getHands(), dX - 4, dY + 10, 80, 60);
-                this.ctx.drawImage(player.getHead(), dX, dY - 35, 65, 95);
+                if (player.Direction) {
+                    this.ctx.drawImage(player.getLegs(), dX + 10, dY + 70, 50, 20);
+                    this.ctx.drawImage(player.model("body"), dX, dY, 60, 80);
+                    this.ctx.drawImage(player.getHands(), dX + 17, dY + 10, 50, 60);
+                    this.ctx.drawImage(player.getHead(), dX, dY - 35, 65, 95);
+                } else {
+                    this.ctx.drawImage(player.getLegs(), dX, dY + 70, 50, 20);
+                    this.ctx.drawImage(player.model("body"), dX, dY, 60, 80);
+                    this.ctx.drawImage(player.getHands(), dX - 7, dY + 10, 50, 60);
+                    this.ctx.drawImage(player.getHead(), dX, dY - 35, 65, 95);
+                }
+            }
+            if (player.Attack) {
+                if (player.Direction) {
+                    this.ctx.drawImage(player.model("attack"), dX + 5, dY + 20, 90, 50);
+                } else {
+                    this.ctx.drawImage(player.model("attack"), dX - 35, dY + 20, 90, 50);
+                }
             }
         } else {
-            this.ctx.drawImage(player.getLegs(), dX + 10, dY + 70, 50, 20);
-            this.ctx.drawImage(player.model("body"), dX, dY, 60, 80);
-            this.ctx.drawImage(player.getHands(), dX + 17, dY + 10, 50, 60);
-            this.ctx.drawImage(player.getHead(), dX, dY - 35, 65, 95);
-        }
-        if (player.Attack) {
-            this.ctx.drawImage(player.model("attack"), dX + 5, dY + 20, 90, 50);
+            this.ctx.drawImage(player.model("die"), dX, dY, 115, 85);
+            player.Ready = false;
         }
     }
 
@@ -158,57 +181,69 @@ class Game {
             }
             context.CounterFPS = 0;
         }
-        context.drawPlayer(context.player1);
-        context.drawPlayer(context.player2);
+        if (context.player1.Ready && context.player2.Ready) {
+            context.drawPlayer(context.player1);
+            context.drawPlayer(context.player2);    
+        }
     }
 
-    playerAction(player) {
-        switch (player.key) {
-            case player.Control[0]:
-                //w
-                if (player.Motions) {
-                    if (player.Y > 40) {
-                        player.move = 'up';
-                    } else {
-                        player.move = 'stop';
-                    }
+    playerAction(player, player2) {
+        if (player.Ready && player2.Ready) {
+            if (player.Attack && !player2.Attack) {
+                if ((Math.abs(player.X - player2.X) < 90) && (Math.abs(player.Y - player2.Y) < 30)) {
+                    player2.setLife(player.getDamage());
+                    player.Attack = false;
+                    console.log(player2.life);
                 }
-                break;
+            }
+            switch (player.key) {
+                case player.Control[0]:
+                    //w
+                    if (player.Motions) {
+                        if (player.Y > 40) {
+                            player.move = 'up';
+                        } else {
+                            player.move = 'stop';
+                        }
+                    }
+                    break;
 
-            case player.Control[1]:
-                //a
-                if (player.Motions) {
-                    if (player.X > 40) {
-                        player.Direction = false;
-                        player.move = 'left';
-                    } else {
-                        player.move = 'stop';
+                case player.Control[1]:
+                    //a
+                    if (player.Motions) {
+                        if (player.X > 40) {
+                            player.Direction = false;
+                            player.move = 'left';
+                        } else {
+                            player.move = 'stop';
+                        }
                     }
-                }
-                break;
+                    break;
 
-            case player.Control[2]:
-                //s
-                if (player.Motions) {
-                    if (player.Y < (canvas.offsetHeight - 90)) {
-                        player.move = 'down';  
-                    } else {
-                        player.move = 'stop';
+                case player.Control[2]:
+                    //s
+                    if (player.Motions) {
+                        if (player.Y < (canvas.offsetHeight - 90)) {
+                            player.move = 'down';
+                        } else {
+                            player.move = 'stop';
+                        }
                     }
-                }
-                break;
+                    break;
 
-            case player.Control[3]:
-                //d
-                if (player.Motions) {
-                    if (player.X < (canvas.offsetWidth - 100)) {
-                        player.Direction = true;
-                        player.move = 'right';    
-                    } else {
-                        player.move = 'stop';
+                case player.Control[3]:
+                    //d
+                    if (player.Motions) {
+                        if (player.X < (canvas.offsetWidth - 100)) {
+                            player.Direction = true;
+                            player.move = 'right';
+                        } else {
+                            player.move = 'stop';
+                        }
                     }
-                }
-                break;
+                    break;
+            }
+
         }
     }
 }
@@ -218,7 +253,10 @@ class Player {
         this.Ready = false;
         this.path = "source/models/" + playerVariant + "/";
 
-        this.models = new Map();
+        this.models = {
+            left: new Map(),
+            right: new Map(),
+        };
         this.__initImage();
         this.Control = null;
         this.move = "stop";
@@ -227,7 +265,7 @@ class Player {
 
         this.key = null;
         this.life = 100;
-        this.damage = 20;
+        this.damage = 10;
         this.speed = 3;
         this.Waiting = true;
         this.Motions = false;
@@ -261,50 +299,108 @@ class Player {
         let img = new Image();
         // кэшируем картинки в память
         // тело
-        this.loadImg(this.path + "body.png").then((res) => {
-            this.models.set("body", res);
+        this.loadImg(this.path + "/right/body.png").then((res) => {
+            this.models.right.set("body", res);
         });
 
         // головы
-        var heads = [];
-        this.loadImg(this.path + "head_1.png").then((res) => {
-            heads.push(res);
+        var headsR = [];
+        this.loadImg(this.path + "/right/head_1.png").then((res) => {
+            headsR.push(res);
         });
-        this.loadImg(this.path + "head_3.png").then((res) => {
-            heads.push(res);
+        this.loadImg(this.path + "/right/head_3.png").then((res) => {
+            headsR.push(res);
         });
-        this.models.set("heads", heads);
+        this.models.right.set("heads", headsR);
 
         //руки
-        var hands = [];
-        this.loadImg(this.path + "hands_1.png").then((res) => {
-            hands.push(res);
+        var handsR = [];
+        this.loadImg(this.path + "/right/hands_1.png").then((res) => {
+            handsR.push(res);
         });
-        this.loadImg(this.path + "hands_2_1.png").then((res) => {
-            hands.push(res);
+        this.loadImg(this.path + "/right/hands_2_1.png").then((res) => {
+            handsR.push(res);
         });
-        this.loadImg(this.path + "hands_2_2.png").then((res) => {
-            hands.push(res);
+        this.loadImg(this.path + "/right/hands_2_2.png").then((res) => {
+            handsR.push(res);
         });
-        this.models.set("hands", hands);
+        this.models.right.set("hands", handsR);
 
         //ноги
-        var legs = [];
-        this.loadImg(this.path + "legs_1.png").then((res) => {
-            legs.push(res);
+        var legsR = [];
+        this.loadImg(this.path + "/right/legs_1.png").then((res) => {
+            legsR.push(res);
         });
-        this.loadImg(this.path + "legs_2_1.png").then((res) => {
-            legs.push(res);
+        this.loadImg(this.path + "/right/legs_2_1.png").then((res) => {
+            legsR.push(res);
         });
-        this.loadImg(this.path + "legs_2_2.png").then((res) => {
-            legs.push(res);
+        this.loadImg(this.path + "/right/legs_2_2.png").then((res) => {
+            legsR.push(res);
         });
-        this.models.set("legs", legs);
+        this.models.right.set("legs", legsR);
 
         //атака
-        this.loadImg(this.path + "attack.png").then((res) => {
-            this.models.set("attack", res);
+        this.loadImg(this.path + "/right/attack.png").then((res) => {
+            this.models.right.set("attack", res);
         });
+
+        //смерть
+        this.loadImg(this.path + "/right/die.png").then((res) => {
+            this.models.right.set("die", res);
+        });
+
+        // тело
+        this.loadImg(this.path + "/left/body.png").then((res) => {
+            this.models.left.set("body", res);
+        });
+
+        // головы
+        var headsL = [];
+        this.loadImg(this.path + "/left/head_1.png").then((res) => {
+            headsL.push(res);
+        });
+        this.loadImg(this.path + "/left/head_3.png").then((res) => {
+            headsL.push(res);
+        });
+        this.models.left.set("heads", headsL);
+
+        //руки
+        var handsL = [];
+        this.loadImg(this.path + "/left/hands_1.png").then((res) => {
+            handsL.push(res);
+        });
+        this.loadImg(this.path + "/left/hands_2_1.png").then((res) => {
+            handsL.push(res);
+        });
+        this.loadImg(this.path + "/left/hands_2_2.png").then((res) => {
+            handsL.push(res);
+        });
+        this.models.left.set("hands", handsL);
+
+        //ноги
+        var legsL = [];
+        this.loadImg(this.path + "/left/legs_1.png").then((res) => {
+            legsL.push(res);
+        });
+        this.loadImg(this.path + "/left/legs_2_1.png").then((res) => {
+            legsL.push(res);
+        });
+        this.loadImg(this.path + "/left/legs_2_2.png").then((res) => {
+            legsL.push(res);
+        });
+        this.models.left.set("legs", legsL);
+
+        //атака
+        this.loadImg(this.path + "/left/attack.png").then((res) => {
+            this.models.left.set("attack", res);
+        });
+
+        //смерть
+        this.loadImg(this.path + "/left/die.png").then((res) => {
+            this.models.left.set("die", res);
+        });
+
+        console.log(this.models);
     }
 
     async loadImg(src) {
@@ -319,7 +415,11 @@ class Player {
     }
 
     model(typeModel) {
-        return this.models.get(typeModel);
+        if (this.Direction) {
+            return this.models.right.get(typeModel);
+        } else {
+            return this.models.left.get(typeModel);
+        }
     }
 
     getHead() {
@@ -371,6 +471,4 @@ class Player {
     getDamage() {
         return this.damage;
     }
-
-    attack() { }
 }
