@@ -39,7 +39,7 @@ function startGame() {
     });
 
     document.addEventListener("keyup", (event) => {
-        if (!event.repeat && !game.status.endGame) {
+        if (!event.repeat) {
             if (
                 event.code === game.player1.Control[0] ||
                 event.code === game.player1.Control[1] ||
