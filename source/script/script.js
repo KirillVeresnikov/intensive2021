@@ -75,6 +75,13 @@ function startGame() {
             }
         }
     });
+
+    game.canvas.addEventListener('click', (event) => {
+        if ((event.pageX > 760 && event.pageX < 835) && (event.pageY > 20 && event.pageY < 70)) {
+           game.status.reset = true;
+        }
+    });
+
 }
 
 class Game {
@@ -96,6 +103,7 @@ class Game {
             background: [],
             life: new Map()
         };
+
         this.__initImageGame();
 
         this.CounterFPS = 0;
@@ -201,6 +209,9 @@ class Game {
         context.drawPlayer(context.player1);
         context.drawPlayer(context.player2);
 
+        if (context.status.reset) {
+            context.__startGame();
+        }
     }
 
     drawInterface() {
@@ -506,6 +517,21 @@ class Game {
         return await promise;
     }
 
+    __startGame () {
+        this.player1.X = 100;
+        this.player1.Y = 350;
+        this.player1.life = 100;
+        this.player1.Ready = true;
+
+        this.player2.Direction = false;
+        this.player2.X = 550;
+        this.player2.Y = 350;
+        this.player2.life = 100;
+        this.player2.Ready = true;
+
+        this.status.endGame = false;
+        this.status.reset = false;
+    }
 }
 
 class Player {
