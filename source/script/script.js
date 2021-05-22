@@ -77,7 +77,7 @@ function startGame() {
     });
 
     game.canvas.addEventListener('click', (event) => {
-        if ((event.pageX > ((document.body.clientWidth / 2) - 30) && event.pageX < ((document.body.clientWidth / 2) + 40)) && (event.pageY > 20 && event.pageY < 70)) {
+        if ((event.pageX > (game.canvas.offsetLeft + 320)) && event.pageX < (game.canvas.offsetLeft + 380) && (event.pageY > 20 && event.pageY < 70)) {
            game.status.reset = true;
         }
     });
